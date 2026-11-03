@@ -1,44 +1,42 @@
-from collections import deque
+# BFS for Robot Path Planning
 
 grid = [
-    "S....",
-    ".##..",
-    "...#.",
-    ".#...",
-    "....G"
+    ['S', '.', '#'],
+    ['.', '.', '.'],
+    ['.', '.', 'G']
 ]
-directions = [("Down", 1, 0), ("Right", 0, 1),
-              ("Up", -1, 0), ("Left", 0, -1)]
+
 start = (0, 0)
-goal = (4, 4)
-queue = deque([(start, [])])
-visited = {start}
-path = None
+goal = (2, 2)
 
-while queue:
-    position, moves = queue.popleft()
-    if position == goal:
-        path = moves
-        break
+moves = [(0, 1), (1, 0), (0, -1), (-1, 0)]
 
-    row, col = position
-    for name, row_change, col_change in directions:
-        next_row = row + row_change
-        next_col = col + col_change
-        next_position = (next_row, next_col)
-        if (0 <= next_row < len(grid) and
-                0 <= next_col < len(grid[0]) and
-                grid[next_row][next_col] != "#" and
-                next_position not in visited):
-            visited.add(next_position)
-            queue.append((next_position, moves + [name]))
+def bfs():
+    queue = [(start, [])]
+    visited = [start]
 
-print("AI-5: Robot Path using BFS")
-for line in grid:
-    print(line)
+    while queue:
+        position, path = queue.pop(0)
 
-if path is None:
-    print("No path found.")
-else:
-    print("Path:", path)
-    print("Total moves:", len(path))
+        if position == goal:
+            return path
+
+        x, y = position
+
+        for dx, dy in moves:
+            nx = x + dx
+            ny = y + dy
+
+            if (0 <= nx < 3 and 0 <= ny < 3
+                    and grid[nx][ny] != '#'
+                    and (nx, ny) not in visited):
+
+                visited.append((nx, ny))
+                queue.append(((nx, ny), path + [(nx, ny)]))
+
+    return None
+
+path = bfs()
+
+print("Path:", path)
+print("Total Steps:", len(path))
